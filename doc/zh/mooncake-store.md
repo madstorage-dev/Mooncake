@@ -13,6 +13,8 @@ Mooncake Store 的主要特性包括：
 *   **灵活的落盘策略**：支持 Eager、Lazy 和 None 三种将数据持久化到慢速存储的策略，满足不同场景下的数据持久化需求。
 *   **动态资源伸缩**：支持动态添加和删除节点，灵活应对系统负载变化，实现资源的弹性管理。
 
+![architecture](../../image/mooncake-store-arch.png)
+
 ## C/C++ API
 
 ### Get 接口
