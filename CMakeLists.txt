@@ -45,6 +45,8 @@ if (WITH_P2P_STORE AND USE_CUDA)
   message(FATAL_ERROR "Cannot enable both WITH_P2P_STORE and USE_CUDA at the same time.")
 endif()
 
+
+find_package(pybind11 CONFIG REQUIRED)
 add_subdirectory(mooncake-store)
 
 

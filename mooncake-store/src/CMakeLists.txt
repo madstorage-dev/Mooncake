@@ -1,43 +1,23 @@
-FIND_PACKAGE(PythonInterp)
+cmake_minimum_required(VERSION 3.12)
 
-if (PYTHONINTERP_FOUND)
-  if (UNIX AND NOT APPLE)
-    if (PYTHON_VERSION_MAJOR EQUAL 3)
-        FIND_PACKAGE(Boost COMPONENTS python${PYTHON_VERSION_SUFFIX})
-        FIND_PACKAGE(Python3 COMPONENTS Interpreter Development)
-        include_directories(${Python3_INCLUDE_DIRS})
-    else()
-        FIND_PACKAGE(Boost COMPONENTS python)
-        FIND_PACKAGE(PythonInterp)
-        FIND_PACKAGE(PythonLibs REQUIRED)
-    endif()
-  else()	
-    if (PYTHON_VERSION_MAJOR EQUAL 3)
-        FIND_PACKAGE(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
-        FIND_PACKAGE(PythonInterp 3)
-        FIND_PACKAGE(PythonLibs 3 REQUIRED)
-    else()
-        FIND_PACKAGE(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
-        FIND_PACKAGE(PythonInterp)
-        FIND_PACKAGE(PythonLibs REQUIRED)
-    endif()
-  endif()
-else()
-    message("Python not found")
-endif()
+# Find Python package
+find_package(Python3 REQUIRED COMPONENTS Development)
+find_package(pybind11 REQUIRED)
 
 file(GLOB SOURCES "*.cpp")
 add_subdirectory(cachelib_memory_allocator)
 
 add_library(cache_allocator ${SOURCES})
 target_link_libraries(cache_allocator PUBLIC transfer_engine glog gflags)
+# Add Python include directories to cache_allocator
+target_include_directories(cache_allocator PRIVATE ${Python3_INCLUDE_DIRS})
 
-find_package(pybind11 CONFIG REQUIRED) 
-pybind11_add_module(distributed_object_store ${SOURCES} distributed_object_store_helper.cpp)
-target_link_libraries(distributed_object_store PUBLIC cache_allocator cachelib_memory_allocator)
+# Create the Python module without SOABI suffix
+pybind11_add_module(distributed_object_store ${SOURCES})
+set_target_properties(distributed_object_store PROPERTIES NO_SONAME ON)
+target_link_libraries(distributed_object_store PRIVATE cache_allocator cachelib_memory_allocator)
+
+# Include Python headers
+target_include_directories(distributed_object_store PRIVATE ${Python3_INCLUDE_DIRS})
+
 install(TARGETS distributed_object_store DESTINATION .)
-
-# PYTHON_ADD_MODULE(distributed_object_store_helper distributed_object_store_helper.cpp)
-
-# target_compile_definitions(distributed_object_store
-                        #    PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
