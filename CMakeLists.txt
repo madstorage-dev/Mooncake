@@ -45,6 +45,9 @@ if (WITH_P2P_STORE AND USE_CUDA)
   message(FATAL_ERROR "Cannot enable both WITH_P2P_STORE and USE_CUDA at the same time.")
 endif()
 
+add_subdirectory(mooncake-store)
+
+
 if (WITH_P2P_STORE)
   add_subdirectory(mooncake-p2p-store)
   message(STATUS "P2P Store will be build")
